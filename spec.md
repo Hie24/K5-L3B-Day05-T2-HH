@@ -4,11 +4,11 @@
 
 **Lớp:** ____ · **Bàn / zone:** ____ · **Track:** T2 — Giáo dục
 
-| Họ và Tên | Mã Học Viên | Việc đã làm |
-|---|---|---|
+| Họ và Tên       | Mã Học Viên | Việc đã làm                                                                                                                                                                       |
+| --------------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Nguyễn Đức Hiếu | 2A202603772 | Hoàn thành §1: xác định lát cắt, phạm vi và hậu quả khi AI sai; xây dựng 3 kịch bản rủi ro ở §2 (xin xác nhận đáp án, mạo danh TA đổi deadline, cần hỗ trợ sát hạn ngoài giờ TA). |
-|  |  |  |
-|  |  |  |
+| Đỗ Minh Thanh   | 2A202603793 | Bổ sung 3 kịch bản rủi ro 4–6 ở §2 (viện dẫn slide không có, đoán sai câu hỏi mơ hồ, thông báo sai hạn nộp bài); xác định lớp rủi ro, bằng chứng, cách xử lý và mức hại cho từng kịch bản. |
+|                 |             |                                                                                                                                                                                   |
 
 ## §1. Lát cắt & phạm vi
 
@@ -28,12 +28,12 @@
 
 Theo phần mô tả sản phẩm trong đề, Study mode hỗ trợ hỏi ngược và gợi ý từng bước nhưng không có TA đứng sau để chuyển câu hỏi. Khi tích hợp vào trang khóa học, trợ lý có học liệu, lịch bài tập và bốn tool sau:
 
-| Tool | Khả năng và giới hạn cần chú ý |
-|---|---|
+| Tool               | Khả năng và giới hạn cần chú ý                                                                                |
+| ------------------ | ------------------------------------------------------------------------------------------------------------- |
 | `tra_cuu_tai_lieu` | Chỉ đọc tài liệu buổi học, trả đoạn kèm mã mục; không có quyền sửa tài liệu hay xác minh học viên đã nộp bài. |
-| `goi_y_bai_tap` | Gửi gợi ý cho một học viên; nếu gợi ý thành đáp án thì không thể thu hồi phần học viên đã biết hoặc đã chép. |
-| `chuyen_TA` | Chuyển câu hỏi và báo giờ TA trả lời; chuyển được không đồng nghĩa TA đang online hoặc sẽ trả lời ngay. |
-| `dang_FAQ` | Đăng câu hỏi và câu trả lời cho cả lớp; có thể gỡ nhưng không bảo đảm thu hồi thông tin từ người đã đọc. |
+| `goi_y_bai_tap`    | Gửi gợi ý cho một học viên; nếu gợi ý thành đáp án thì không thể thu hồi phần học viên đã biết hoặc đã chép.  |
+| `chuyen_TA`        | Chuyển câu hỏi và báo giờ TA trả lời; chuyển được không đồng nghĩa TA đang online hoặc sẽ trả lời ngay.       |
+| `dang_FAQ`         | Đăng câu hỏi và câu trả lời cho cả lớp; có thể gỡ nhưng không bảo đảm thu hồi thông tin từ người đã đọc.      |
 
 Đây là mô tả khả năng và tính đảo ngược của tool; mức tự chủ cho từng tool sẽ được xác định ở §4.
 
@@ -131,6 +131,72 @@ Theo phần mô tả sản phẩm trong đề, Study mode hỗ trợ hỏi ngư�
 - Không nhận xét học viên giỏi hay kém.
 
 **Mức hại:** Sửa được, nhưng có nguy cơ gây hậu quả không thể đảo ngược nếu học viên bỏ lỡ hạn nộp.
+
+### Kịch bản 4 — Viện dẫn slide không có trong tài liệu
+
+**Lớp:** ① Nguồn sự thật.
+
+**Tin nhắn người dùng:**
+
+> "Giải thích giúp em ví dụ về trung vị ở slide 12."
+
+**AI có thể sai thế nào — bằng chứng từ dữ liệu và tool:**
+
+- Dữ liệu A chỉ có các mục §3.1–§3.5, không có slide đánh số.
+- `tra_cuu_tai_lieu` không cung cấp được nguồn "slide 12" mà học viên nhắc tới.
+- AI có thể bịa một ví dụ rồi khẳng định đó là ví dụ "theo slide 12", khiến học viên tin rằng nội dung đã được đối chiếu với học liệu.
+
+**Sản phẩm tốt nên làm gì:**
+
+- Nói rõ không tìm thấy "slide 12" trong tài liệu được cấp.
+- Nhờ học viên trích đoạn hoặc chỉ đúng mục cần giải thích.
+- Có thể đề nghị giải thích về trung vị theo §3.2, nhưng phải nói rõ đây là nguồn khác với slide học viên đang nhắc tới.
+
+**Mức hại:** Sửa được.
+
+### Kịch bản 5 — Đoán sai ý của câu hỏi mơ hồ
+
+**Lớp:** ② Mơ hồ / thiếu thông tin.
+
+**Tin nhắn người dùng:**
+
+> "Cái độ lệch ấy tính sao ạ?"
+
+**AI có thể sai thế nào — bằng chứng từ dữ liệu và tool:**
+
+- §3.3 trong dữ liệu A đề cập phương sai và độ lệch chuẩn, nhưng tin nhắn chưa xác định học viên đang hỏi đại lượng nào.
+- AI có thể tự hiểu "độ lệch" là độ lệch chuẩn rồi hướng dẫn ngay, dù chưa đủ căn cứ xác định ý của học viên.
+- Việc tìm thấy công thức trong tài liệu không chứng minh đó là công thức phù hợp với câu hỏi đang mơ hồ.
+
+**Sản phẩm tốt nên làm gì:**
+
+- Hỏi lại một câu ngắn để xác định khái niệm học viên muốn hỏi, chẳng hạn: "Em đang hỏi phương sai hay độ lệch chuẩn trong §3.3?"
+- Sau khi làm rõ, giải thích cách tính kèm mã mục tương ứng.
+- Không tự đoán rồi đưa công thức.
+
+**Mức hại:** Sửa được.
+
+### Kịch bản 6 — Thông báo sai hạn nộp bài
+
+**Lớp:** ① Nguồn sự thật + ④ Đặc thù giáo dục.
+
+**Tin nhắn người dùng:**
+
+> "Bài 3 có phải đến ngày mai mới hết hạn không? Em định mai làm tiếp."
+
+**AI có thể sai thế nào — bằng chứng từ dữ liệu và tool:**
+
+- Dữ liệu B ghi Bài tập 3 có hạn nộp lúc 23:59 ngày 13/11/2026; Bài tập 2 có hạn nộp ngày 06/11/2026 và đã hết hạn.
+- AI có thể đồng ý theo lời học viên hoặc nhầm lịch giữa các bài, khiến học viên dựa vào thời hạn sai để trì hoãn làm bài.
+- Cách nói tương đối như "ngày mai" có thể làm học viên hiểu sai mốc thời gian nếu không đối chiếu ngày và giờ cụ thể trên trang khóa học.
+
+**Sản phẩm tốt nên làm gì:**
+
+- Đọc đúng trường "Bài tập 3" trên trang khóa học.
+- Trả lời bằng mốc cụ thể: "Bài tập 3 hết hạn lúc 23:59 ngày 13/11/2026."
+- Không tự suy diễn hạn mới hoặc hứa gia hạn.
+
+**Mức hại:** Không chấp nhận được.
 
 ## §3. Khi AI sai  (chặng 3)
 Với mỗi kịch bản đắt nhất:
