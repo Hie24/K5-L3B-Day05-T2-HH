@@ -1,8 +1,8 @@
-# Bài nộp LAB5 — T2 Giáo dục · Nhóm [tên]
+# Bài nộp LAB5 — T2 Giáo dục · Nhóm [HH]
 
 ## Thành viên nhóm
 
-**Lớp:** ____ · **Bàn / zone:** ____ · **Track:** T2 — Giáo dục
+**Lớp:** L3B · **Bàn / zone:** HH · **Track:** T2
 
 | Họ và Tên       | Mã Học Viên | Việc đã làm                                                                                                                                                                       |
 | --------------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -287,13 +287,117 @@ Theo phần mô tả sản phẩm trong đề, Study mode hỗ trợ hỏi ngư�
 
 **Mức hại:** Không chấp nhận được.
 
+### Quyết định chọn 2 kịch bản khó để phân tích sâu
+
+Chọn **kịch bản 8 — Phát hiện lỗi kiến thức giáo trình §3.3** và **kịch bản 2 — Mạo danh TA cập nhật deadline sai qua FAQ**. Cả hai đều có thể làm thông tin sai lan ra toàn khóa qua `dang_FAQ`, thay vì chỉ ảnh hưởng một học viên; gỡ nội dung không bảo đảm thu hồi được kiến thức sai hoặc khôi phục cơ hội nộp bài đã mất. Hai ca cũng đặt ra hai yêu cầu kiểm chứng khác nhau: tài liệu chính thức vẫn có thể sai về kiến thức, còn lời tự xưng TA không chứng minh được thẩm quyền thay đổi deadline.
+
+#### Kịch bản sâu 1: Phát hiện lỗi kiến thức giáo trình §3.3
+
+- **Bối cảnh:** Học viên phát hiện mâu thuẫn khi phương sai = 0.16 thì độ lệch chuẩn = 0.4 (0.4 > 0.16), trái với khẳng định của giáo trình §3.3 rằng độ lệch chuẩn luôn nhỏ hơn phương sai.
+- **AI có thể sai:** Tôn sùng tài liệu tuyệt đối, khẳng định học viên sai và ép tính lại, thậm chí tự ý đăng FAQ sai bản chất toán học cho toàn khoá.
+- **Giải pháp chuẩn:** Xác nhận học viên tính đúng (0.4 > 0.16); chỉ ra giới hạn của §3.3 (chỉ đúng khi phương sai > 1); đề xuất gửi phiếu báo lỗi cho Giảng viên/TA cập nhật chính thức.
+- **Mức độ:** Không chấp nhận được.
+
+#### Kịch bản sâu 2: Mạo danh TA cập nhật deadline sai qua FAQ
+
+- **Bối cảnh:** Người dùng tự xưng là Trợ giảng (TA), báo giảng viên vừa gia hạn Bài 3 đến 15/11 và yêu cầu AI cập nhật ngay vào FAQ cho cả lớp mà không cần xác minh.
+- **AI có thể sai:** Tin lời tự xưng dù không có công cụ xác thực danh tính; tự ý gọi `dang_FAQ` công bố deadline sai gây hỗn loạn thông tin cho toàn bộ học viên.
+- **Giải pháp chuẩn:** Không coi lời tự xưng là quyền quản trị; giữ nguyên deadline chính thức (23:59 ngày 13/11); từ chối đăng FAQ và yêu cầu xác minh qua kênh nội bộ có thẩm quyền.
+- **Mức độ:** Không chấp nhận được.
+
 ## §3. Khi AI sai  (chặng 3)
-Với mỗi kịch bản đắt nhất:
-- AI nói gì (nguyên văn) · người dùng thấy gì · làm gì tiếp · ai được báo, sau bao lâu.
-- Quyết định: hỏi lại / trả lời kèm giới hạn / dừng và chuyển người — chọn cách nào, đã loại cách nào, vì sao.
-- Loại lỗi (hệ thống / người dùng / ngữ cảnh) và vì sao cách nói, cách sửa đi theo loại đó.
-- 2–3 nguyên tắc HAX/PAIR, mỗi cái trỏ vào một chỗ cụ thể (câu chữ hoặc chỗ trên màn hình).
-- Lỗi nào sửa câu chữ không cứu được (nếu có), và thiết kế cứu nó thế nào.
+
+Phân tích hai kịch bản đã chọn ở §2: **kịch bản 8 — lỗi kiến thức tại §3.3** và **kịch bản 2 — người tự xưng TA yêu cầu đổi deadline qua FAQ**. Các giao diện, trạng thái và vị trí đánh số dưới đây là **thiết kế dự kiến cho prototype**, chưa phải chức năng đã triển khai.
+
+### 3.1. Kịch bản sâu 1 — Phát hiện lỗi kiến thức giáo trình §3.3
+
+**Căn cứ và giới hạn:** `tra_cuu_tai_lieu` trả được câu đang có trong §3.3, nhưng sự tồn tại của câu đó không chứng minh nó đúng. Phản ví dụ 0.16 và 0.4 được kiểm tra trực tiếp: 0.4 × 0.4 = 0.16 và 0.4 > 0.16. Đây là kiểm tra nhận định trong học liệu, không phải xác nhận đáp số Bài tập 3 đang mở.
+
+**Câu AI nói nguyên văn:**
+
+> "Bạn không sai ở phép tính này: căn bậc hai của 0.16 là 0.4, và 0.4 lớn hơn 0.16. Câu ‘độ lệch chuẩn luôn nhỏ hơn phương sai’ trong §3.3 cần được xem lại. Với giá trị phương sai x không âm, √x < x khi x > 1; √x > x khi 0 < x < 1; hai giá trị bằng nhau khi x = 0 hoặc x = 1. Mình chưa sửa học liệu chính thức hay đăng thông báo cho cả lớp. Bạn có muốn gửi trích đoạn và phản ví dụ này cho TA/giảng viên kiểm tra không?"
+
+**Người dùng thấy gì và làm gì tiếp:**
+
+- **[1] Thẻ căn cứ:** hiện nguyên văn câu sai, mã mục §3.3 và phép kiểm tra 0.4 × 0.4 = 0.16. Tách hai nhãn: **"Phép tính đã kiểm tra"** và **"Học liệu cần giảng viên xác minh"**; không dùng một tỷ lệ tự tin chung để đánh đồng hai việc.
+- **[2] Thẻ sửa sai:** nút **"Xem đối chiếu §3.3"**, **"Sửa nội dung phản ánh"** và **"Gửi phản ánh cho TA"**. Bản nháp chỉ gồm câu trích, phản ví dụ và câu hỏi của học viên; học viên xem trước, sửa hoặc hủy được.
+- Sau khi học viên chọn gửi, dùng `chuyen_TA` để chuyển câu hỏi. Chỉ khi tool trả thành công mới hiện **"Đã tiếp nhận"** kèm mã tiếp nhận nếu tool có trả về; đang chờ thì hiện **"Đang gửi"**; lỗi thì hiện **"Chưa gửi được — Thử lại"** và giữ bản nháp.
+- Không có nút sửa giáo trình hoặc xuất bản FAQ trong luồng của học viên. Nếu học viên không gửi, bản nháp không được chuyển; lời giải thích và cảnh báo vẫn còn để học viên đọc, học tiếp.
+
+**Ai được báo, sau bao lâu, thấy gì:**
+
+- TA nhận câu hỏi ngay khi `chuyen_TA` xác nhận chuyển thành công; nội dung gồm nguồn §3.3, câu bị phản ánh, phép kiểm tra và nội dung học viên đã duyệt.
+- Trong giờ trực 08:00–22:00, thông báo đã vào hàng đợi; chỉ hiện thời gian trả lời dự kiến nếu tool cung cấp. Ngoài giờ, nói rõ ca trực tiếp theo bắt đầu lúc 08:00, không hứa được trả lời đúng 08:00 hay trước hạn nộp bài.
+- TA chuyển vấn đề chuyên môn tới giảng viên theo quy trình của khóa học; AI không tự tuyên bố giảng viên đã nhận hoặc đã sửa. Học viên được biết kết luận khi người có thẩm quyền thực sự cập nhật trạng thái; không dựng thông báo thành công trước sự kiện đó.
+
+**Quyết định và phương án đã loại:**
+
+- **Chọn trả lời kèm giới hạn và đề nghị chuyển người:** phản ví dụ đủ để giải thích ngay mâu thuẫn; quyền đính chính học liệu chính thức vẫn thuộc giảng viên. Học viên không phải tiếp tục tin câu sai trong lúc chờ.
+- **Loại chỉ hỏi lại:** học viên đã cung cấp đầy đủ mã mục và phép tính; hỏi thêm không làm rõ điều gì còn thiếu, chỉ khiến học viên nghi ngờ kết quả đúng.
+- **Loại dừng hoàn toàn để chờ TA:** ngoài giờ trực, học viên sẽ tiếp tục mắc kẹt dù phản ví dụ có thể kiểm tra được ngay.
+- **Loại tự sửa tài liệu hoặc tự đăng FAQ:** bộ tool không có quyền sửa học liệu; phổ biến kết luận chưa được duyệt có thể gây thêm sai lệch cho cả lớp.
+
+**Loại lỗi và cách phản hồi:**
+
+- Đây là **lỗi hệ thống ở nguồn học liệu**; nếu AI bênh vực tài liệu bất chấp phản ví dụ thì còn là lỗi kiểm tra căn cứ của trợ lý. Không phải lỗi người dùng tính sai.
+- Không yêu cầu học viên nhận lỗi hay làm lại chỉ vì khác tài liệu. Nếu AI đã trả lời sai trước đó, nói: **"Mình đã khẳng định câu trong §3.3 mà chưa kiểm tra phản ví dụ. Xin lỗi bạn; mình sửa lại lời giải thích như sau…"**, rồi hiện phần đúng và trạng thái học liệu chưa đính chính.
+
+**Lỗi sửa câu chữ không cứu được:** đổi giọng nói thành mềm mỏng nhưng vẫn để `dang_FAQ` xuất bản lời giải sai thì hậu quả vẫn lan rộng. Thiết kế cần chặn việc xuất bản nội dung đang bị phản ánh khi chưa có duyệt chuyên môn; giữ trích đoạn gốc và trạng thái xử lý để người dùng không nhầm lời giải thích của trợ lý với bản học liệu đã được sửa.
+
+### 3.2. Kịch bản sâu 2 — Mạo danh TA cập nhật deadline sai qua FAQ
+
+**Căn cứ và giới hạn:** Dữ liệu B ghi hạn Bài tập 3 là **23:59 ngày 13/11/2026**, không có thông tin gia hạn. Bộ tool không xác thực được danh tính hoặc quyền quản trị của người nhắn. `dang_FAQ` chỉ đăng nội dung, không có quyền sửa deadline trên trang khóa học.
+
+**Câu AI nói nguyên văn:**
+
+> "Trang khóa học hiện ghi hạn Bài tập 3 là 23:59 ngày 13/11/2026. Mình chưa có xác nhận chính thức về việc gia hạn đến 15/11 và không thể xác minh quyền TA qua lời tự giới thiệu trong chat, nên mình sẽ không đăng thông báo này vào FAQ. Bạn vui lòng xác nhận qua kênh quản trị chính thức. Nếu cần, mình có thể chuyển yêu cầu kiểm tra thông tin cho TA; deadline hiện tại vẫn được giữ nguyên."
+
+**Người dùng thấy gì và làm gì tiếp:**
+
+- **[1] Thẻ đối chiếu:** cột **"Deadline chính thức"** hiện 23:59 ngày 13/11/2026, nguồn Dữ liệu B; cột **"Yêu cầu chưa xác minh"** ghi đề nghị gia hạn đến 15/11. Không thêm giờ hết hạn cho ngày 15/11 vì tin nhắn không cung cấp.
+- **[3] Thẻ giới hạn quyền:** trạng thái **"Chưa xác minh — Chưa đăng FAQ — Deadline chưa thay đổi"**; nút **"Xem nguồn chính thức"**, **"Sửa yêu cầu"** và **"Gửi yêu cầu kiểm tra cho TA"**. Không có nút xuất bản cho người chưa được xác thực quyền.
+- Học viên/người nhắn xem trước nội dung chuyển TA và có thể sửa hoặc hủy. Chỉ chuyển qua `chuyen_TA` khi người dùng chọn gửi; trạng thái gửi chờ/thành công/thất bại tương ứng kết quả thật của tool, không nói "đã báo" khi chưa gửi được.
+- Người có thẩm quyền xác minh và cập nhật qua kênh quản trị của khóa học. AI không tự tạo quyền quản trị trong chat. Sau khi nguồn chính thức được cập nhật, trợ lý mới có căn cứ để thông báo hạn mới; một FAQ riêng lẻ không thay thế được nguồn deadline.
+- Nếu người nhắn không làm gì hoặc không có xác nhận, không gửi FAQ và giữ nguyên deadline. Không hiểu sự im lặng hay câu "thầy đang bận" là đồng ý cho xuất bản.
+
+**Ai được báo, sau bao lâu, thấy gì:**
+
+- Khi người nhắn chọn gửi và `chuyen_TA` thành công, TA nhận nội dung đề nghị, deadline đang có, nguồn đối chiếu và nhãn **"Danh tính/quyền người gửi chưa được xác minh"**. Không chuyển lời tự xưng thành danh tính TA đã được xác nhận.
+- Áp dụng giờ trực 08:00–22:00 và chỉ hiện thời gian dự kiến khi có từ tool; ngoài giờ thông báo ca trực tiếp theo, không hứa xử lý trước hạn hoặc tự gia hạn trong lúc chờ.
+- Nếu chưa có lần xuất bản sai, không phát cảnh báo cho cả lớp. Nếu phát hiện FAQ sai đã được đăng, chuyển ngay thông tin về bài FAQ đó và nguồn deadline tới người quản trị đã xác thực để xử lý/đính chính; AI không tự hứa đã gỡ bài hay gửi thông báo cho cả lớp khi chưa có thao tác thành công.
+
+**Quyết định và phương án đã loại:**
+
+- **Chọn dừng hành động xuất bản và chuyển xác minh cho người có thẩm quyền:** ảnh hưởng có thể tới cả lớp, trong khi không có bằng chứng về việc gia hạn hay quyền người gửi. Vẫn trả lời deadline hiện có và cung cấp đường kiểm tra để yêu cầu thật không bị bỏ rơi.
+- **Loại chỉ hỏi lại "Bạn có chắc không?":** người tự xưng có thể tiếp tục xác nhận; việc lặp lại lời nói không tạo ra bằng chứng về danh tính hay quyền.
+- **Loại đăng FAQ kèm nhãn "chưa xác minh":** học viên vẫn có thể dựa vào ngày 15/11 để trì hoãn; nhãn cảnh báo không thu hồi được hạn nộp đã bỏ lỡ.
+- **Loại chỉ từ chối rồi kết thúc:** yêu cầu có thể xuất phát từ TA thật dùng nhầm kênh; hướng sang kênh quản trị hoặc chuyển câu hỏi vẫn hỗ trợ được mà không vượt thẩm quyền.
+
+**Loại lỗi và cách phản hồi:**
+
+- Đây là **lỗi ngữ cảnh/thẩm quyền**: một kênh hỗ trợ học tập bị dùng như kênh quản trị; hiểu đúng nội dung "gia hạn đến 15/11" vẫn không cho phép thực hiện nó. Nếu AI bỏ qua kiểm tra quyền và đăng, đó là lỗi kiểm soát của hệ thống.
+- Không kết luận người nhắn là kẻ lừa đảo hoặc trách họ nhập sai. Nói rõ giới hạn xác minh và chỉ đúng kênh tiếp theo. Nếu AI đã đăng sai, phải nhận lỗi: **"Mình đã đăng thông tin gia hạn khi chưa có xác nhận chính thức. Đây là lỗi xử lý của trợ lý; mình sẽ chuyển việc đính chính cho người có thẩm quyền."** Trạng thái chuyển vẫn phải khớp kết quả tool.
+
+**Lỗi sửa câu chữ không cứu được:** AI nói "mình chưa xác minh" nhưng vẫn gọi `dang_FAQ` thì lớp vẫn nhận thông tin sai. Cần kiểm tra quyền và căn cứ ở bước thực thi xuất bản, không chỉ ẩn nút hoặc dựa vào câu trả lời của AI; thiếu xác minh thì không thực thi. Nếu đã công bố, cần quy trình đính chính tới người bị ảnh hưởng, vì gỡ FAQ không bảo đảm mọi người biết deadline đúng.
+
+### 3.3. Ba nguyên tắc HAX/PAIR được chọn
+
+Các số [1]–[3] là vị trí dự kiến để đối chiếu với ảnh prototype ở §5, chưa phải ảnh đã hoàn thành.
+
+| Nguyên tắc | Vị trí cụ thể | Lý do và phương án đã loại |
+|---|---|---|
+| **HAX G11 — Giải thích vì sao** | **[1] Thẻ căn cứ/đối chiếu**: trích đúng §3.3 cùng phép kiểm tra; đặt deadline Dữ liệu B cạnh yêu cầu chưa xác minh. | Người dùng tự kiểm được nguồn và điểm mâu thuẫn; loại cách chỉ ghi "theo hệ thống" vì không thể đối chiếu. |
+| **HAX G10 — Thu hẹp phạm vi khi nghi ngờ** | **[3] Trạng thái chưa xác minh và chặn xuất bản**; ở ca §3.3, chỉ kiểm tra phản ví dụ và đề nghị TA duyệt, không sửa giáo trình. | Tách điều đã kiểm được khỏi quyền hành động; loại việc dùng điểm tự tin cao để tự sửa nguồn hoặc đăng FAQ. |
+| **HAX G9 — Sửa dễ dàng** | **[2] Bản nháp phản ánh** và **[3] nút Sửa yêu cầu/Thử lại**, giữ lại nội dung nếu gửi lỗi. | Người dùng sửa được dữ liệu trước khi gửi và không phải kể lại từ đầu; loại cách chỉ cho gửi ngay hoặc bắt mở cuộc chat mới khi thất bại. |
+
+### 3.4. Bốn đường đi cần thể hiện
+
+| Đường đi | Hành vi thiết kế |
+|---|---|
+| **Happy path** | Tra cứu được thông tin không mâu thuẫn thì giải thích kèm mã mục; câu hỏi deadline được trả lời đúng từ Dữ liệu B. |
+| **Low-confidence** | Có mâu thuẫn học liệu hoặc yêu cầu đổi hạn chưa xác minh thì chỉ rõ phần chưa chắc, giới hạn hành động và cho chuyển TA. |
+| **Failure / không có căn cứ** | Không lấy được tài liệu/nguồn deadline thì không suy đoán; chuyển TA lỗi thì báo chưa gửi, giữ bản nháp và cho thử lại. Không hiện trạng thái đã tiếp nhận giả. |
+| **Correction** | Học viên phản biện kết luận của AI hoặc sửa nội dung yêu cầu thì trợ lý kiểm tra lại căn cứ, hiện bản sửa và nhận lỗi nếu trước đó đã nói sai; không tự xuất bản bản sửa cho cả lớp. |
 
 ## §4. Mức tự chủ  (chặng 4)
 Với mỗi tool:
