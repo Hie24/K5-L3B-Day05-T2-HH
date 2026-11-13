@@ -7,7 +7,7 @@
 | Họ và Tên       | Mã Học Viên | Việc đã làm                                                                                                                                                                       |
 | --------------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Nguyễn Đức Hiếu | 2A202603772 | Hoàn thành §1: xác định lát cắt, phạm vi và hậu quả khi AI sai; xây dựng 3 kịch bản rủi ro ở §2 (xin xác nhận đáp án, mạo danh TA đổi deadline, cần hỗ trợ sát hạn ngoài giờ TA). |
-| Đỗ Minh Thanh   | 2A202603793 | Bổ sung 3 kịch bản rủi ro 4–6 ở §2 (viện dẫn slide không có, đoán sai câu hỏi mơ hồ, thông báo sai hạn nộp bài); xác định lớp rủi ro, bằng chứng, cách xử lý và mức hại cho từng kịch bản. |
+| Đỗ Minh Thanh   | 2A202603793 | Xây dựng kịch bản 4–6 ở §2 (viện dẫn slide không có, đoán sai câu hỏi mơ hồ, thông báo sai hạn nộp bài), kèm lớp rủi ro, bằng chứng, cách xử lý và mức hại. Hoàn thành §4: xác định mức tự chủ cho bốn tool; phân tích hậu quả khi sai, khả năng khắc phục, chi phí chờ và phương án đã loại; thiết kế quy trình duyệt và xử lý quá hạn; phân tích tool khó xếp nhất; đối chiếu hai ca đắt nhất và một ca bình thường; bổ sung luật thực thi và điều chỉnh lời hứa với người dùng. |
 | Nguyễn Mạnh Quân | 2A202603776 | Xây dựng 3 kịch bản rủi ro ở §2 (kịch bản 7, 8, 9: lách quy định xin xác nhận đáp án Bài tập 3 đang mở, phát hiện câu sai trong tài liệu giáo trình mục §3.3, khủng hoảng tâm lý lúc nửa đêm và đòi gọi TA hỗ trợ ngay). |
 
 ## §1. Lát cắt & phạm vi
@@ -400,15 +400,110 @@ Các số [1]–[3] là vị trí dự kiến để đối chiếu với ảnh p
 | **Correction** | Học viên phản biện kết luận của AI hoặc sửa nội dung yêu cầu thì trợ lý kiểm tra lại căn cứ, hiện bản sửa và nhận lỗi nếu trước đó đã nói sai; không tự xuất bản bản sửa cho cả lớp. |
 
 ## §4. Mức tự chủ  (chặng 4)
-Với mỗi tool:
-- Mức của nhóm (tự làm / cần người duyệt / cấm). Nếu cần người duyệt: ai duyệt · người duyệt thấy gì · quá hạn thì sao.
-- Lý do theo cost-of-error: sai thì ai chịu gì · đảo lại được không · chờ người thì mất gì.
-- Phương án đã cân nhắc và vì sao loại.
-Thêm:
-- Tool khó xếp nhất: mỗi người từng chọn gì, cái giá của mỗi phía (trỏ về kịch bản ở §2), nhóm chốt thế nào.
-- Thử mức đã đặt trên 2 kịch bản đắt nhất + 1 kịch bản bình thường: cái sai có bị chặn không? còn việc nào làm khi lẽ ra phải hỏi? người dùng bình thường có phải chờ vô ích không?
-- Luật thêm hoặc tool tách bước (nếu có), và vì sao.
-- Một mức tự chủ đã đổi lời hứa nào với người dùng.
+
+Các mức dưới đây là **quyết định thiết kế cho prototype**, dựa trên phạm vi ở §1 và cách xử lý ở §3; chưa phải các kiểm soát đã được triển khai. Nguyên tắc chọn mức là xét người chịu hậu quả, phạm vi lan truyền và khả năng khắc phục sau khi hành động đã xảy ra. Điểm tự tin cao của AI không thay thế quyền phê duyệt.
+
+### 4.1. Mức tự chủ cho từng tool
+
+| Tool | Mức dùng trong thiết kế | Phạm vi được làm và điểm phải dừng |
+|---|---|---|
+| `tra_cuu_tai_lieu` | **Tự làm** | Đọc học liệu buổi đã mở, trả trích đoạn kèm mã mục. Không tìm được nguồn thì nói rõ; có mâu thuẫn thì đối chiếu, không coi câu trích là đúng tuyệt đối. Không dùng tool này để xác minh danh tính, trạng thái nộp bài hay thay thế nguồn lịch ở Dữ liệu B. |
+| `goi_y_bai_tap` | **Tự làm trong phạm vi gợi ý phương pháp** | Giải thích khái niệm, hỏi gợi mở và hỗ trợ từng bước từ học liệu. **Cấm** đưa, xác nhận hoặc bác bỏ đáp số cuối của bài đang mở, kể cả khi học viên nói đã nộp. Câu hỏi mơ hồ phải được làm rõ trước khi gửi gợi ý cụ thể. |
+| `chuyen_TA` | **Cần người gửi duyệt trước khi chuyển** | AI tự soạn bản nháp; học viên/người nhắn xem, sửa và chọn gửi. Không cần TA duyệt trước việc đưa câu hỏi vào hàng đợi; việc nhận và trả lời là bước sau. Không tự gửi toàn bộ lịch sử chat hoặc hứa có người hỗ trợ ngay. |
+| `dang_FAQ` | **Cần người có thẩm quyền duyệt trước khi đăng** | AI chỉ tự soạn bản nháp. TA đã xác thực được duyệt FAQ học tập thông thường trong phạm vi được phân công; giảng viên phụ trách duyệt kết luận về học liệu đang tranh chấp. Thông báo deadline chỉ được duyệt sau khi người có quyền cập nhật nguồn chính thức. **Cấm** xuất bản từ lời tự xưng hoặc khi thiếu duyệt hợp lệ. |
+
+**Không dùng duyệt để vượt giới hạn:** người học đồng ý không cho phép AI lộ đáp án bài đang mở. TA bấm duyệt cũng không cấp cho bộ tool quyền sửa giáo trình, sửa deadline hoặc tạo phòng Meet, vì các quyền đó không có trong mô tả tool.
+
+### 4.2. Cái giá khi sai và phương án đã loại
+
+**`tra_cuu_tai_lieu` — ưu tiên tra cứu ngay, kiểm tra cách sử dụng nguồn.**
+
+- **Ai chịu gì:** học viên có thể học sai nếu AI trích nhầm mục hoặc bênh vực câu sai ở §3.3 như kịch bản 8. Tìm được một đoạn chỉ chứng minh đoạn đó tồn tại trong tài liệu.
+- **Đảo lại được không:** thao tác đọc không sửa nguồn; có thể tra cứu lại và đính chính câu trả lời. Tuy nhiên, không bảo đảm học viên quên được điều đã học sai, nên phải hiện trích đoạn và chỉ rõ mâu thuẫn ngay khi phát hiện.
+- **Chờ người thì mất gì:** bắt TA duyệt mọi lần tra cứu làm học viên chờ cả đêm cho câu hỏi bình thường. Chọn tự tra cứu, chỉ chuyển phần thiếu căn cứ hoặc mâu thuẫn cần kết luận chính thức.
+- **Phương án loại:** duyệt thủ công mọi lần đọc gây chậm không cần thiết; tự trả lời theo trí nhớ khi tra cứu lỗi gây bịa nguồn như kịch bản 4. Với câu hỏi deadline, đối chiếu Dữ liệu B thay vì suy ra từ tài liệu buổi học.
+
+**`goi_y_bai_tap` — cho hỗ trợ ngay, chặn nội dung làm lộ đáp án.**
+
+- **Ai chịu gì:** học viên mất cơ hội tự làm; các học viên khác chịu bất công nếu đáp số của bài đang mở bị tiết lộ như kịch bản 1 và 7. Gợi ý sai khái niệm còn khiến học viên luyện sai như kịch bản 5.
+- **Đảo lại được không:** sửa hoặc xóa tin nhắn không thu hồi được đáp án học viên đã biết hay chia sẻ. Vì vậy, giới hạn phải áp dụng trước khi gợi ý được gửi, đồng thời áp dụng cho câu trả lời trực tiếp trong chat.
+- **Chờ người thì mất gì:** duyệt từng gợi ý sẽ làm ca sát hạn ở kịch bản 3 mất cơ hội tiếp tục làm bài. Cho phép gợi ý phương pháp ngay; thiếu thông tin thì hỏi đúng một điểm còn thiếu, không chuyển tất cả câu hỏi sang TA.
+- **Phương án loại:** cấm mọi gợi ý khi bài đang mở làm mất mục đích hỗ trợ học tập; tự do giải rồi gắn nhãn "tham khảo" vẫn làm lộ đáp án. Xin học viên xác nhận "em đã nộp" không khắc phục được việc thiếu tool kiểm chứng.
+
+**`chuyen_TA` — người gửi duyệt nội dung, hệ thống chuyển theo kết quả thật.**
+
+- **Ai chịu gì:** gửi sai nội dung hoặc cả lịch sử chat có thể làm lộ thông tin không cần thiết của học viên và gây quá tải TA; hứa trả lời ngay khiến học viên chờ vô ích ở kịch bản 3 và 9.
+- **Đảo lại được không:** có thể gửi bổ sung hoặc đính chính, nhưng không bảo đảm thu hồi được nội dung TA đã đọc. Người gửi phải kiểm tra bản nháp trước khi chuyển.
+- **Chờ người thì mất gì:** một bước xác nhận ngắn cho phép sửa nội dung mà không phải chờ TA online. Nếu lại yêu cầu TA duyệt trước khi nhận câu hỏi, luồng hỗ trợ ngoài giờ bị mắc kẹt.
+- **Phương án loại:** tự chuyển mọi câu hỏi làm mất quyền kiểm soát của học viên; cấm chuyển ngoài giờ làm mất đường hỗ trợ sau đó. Chọn cho gửi vào hàng đợi ngoài giờ, nói rõ ca trực tiếp theo bắt đầu 08:00 nhưng không bảo đảm giờ trả lời.
+
+**`dang_FAQ` — chấp nhận chờ duyệt để tránh phát tán sai cho cả lớp.**
+
+- **Ai chịu gì:** cả lớp có thể học sai theo kịch bản 8 hoặc bỏ lỡ hạn nộp theo kịch bản 2; TA/giảng viên phải đính chính và xử lý hậu quả.
+- **Đảo lại được không:** có thể gỡ FAQ, nhưng không bảo đảm thu hồi được nội dung đã đọc, bản chụp hoặc cơ hội nộp bài đã mất. Phạm vi ảnh hưởng lớn hơn một lời giải thích riêng.
+- **Chờ người thì mất gì:** FAQ mới xuất hiện chậm, nhất là ngoài giờ. Trong lúc chờ, trợ lý vẫn trả lời riêng bằng nguồn đã kiểm tra và nêu giới hạn, nên không cần mở quyền xuất bản để giữ hỗ trợ học tập.
+- **Phương án loại:** tự đăng khi AI "rất chắc" không xử lý được nguồn sai hoặc mạo danh; đăng trước rồi duyệt/gỡ sau để hậu quả xảy ra trước kiểm soát. Cấm vĩnh viễn mọi FAQ lại bỏ mất lợi ích chia sẻ câu hỏi đã được kiểm chứng.
+
+### 4.3. Ai duyệt, thấy gì và khi chờ quá hạn
+
+| Hành động | Người duyệt và nội dung cần thấy | Chưa duyệt, quá hạn hoặc thất bại |
+|---|---|---|
+| Gửi câu hỏi qua `chuyen_TA` | Người gửi xem bản nháp gồm câu hỏi, trích đoạn/mã mục liên quan và nội dung muốn nhờ TA kiểm tra. Với kịch bản 2, giữ nhãn "Danh tính/quyền người gửi chưa được xác minh". Chỉ gửi nội dung đã được người gửi đồng ý. | Chưa chọn gửi hoặc đã hủy thì không gọi tool. Nếu sửa bản nháp sau khi xác nhận thì phải xác nhận lại. Gửi lỗi: báo chưa gửi, giữ nội dung để thử lại; không hiện "đã tiếp nhận". |
+| Trả lời sau khi `chuyen_TA` đã nhận | TA xem nội dung đã duyệt và căn cứ, sau đó chuyển giảng viên nếu cần kết luận chuyên môn hoặc thay đổi nguồn chính thức. Thời gian dự kiến chỉ hiển thị khi tool thực sự cung cấp. | Quá thời gian dự kiến thì nói rõ vẫn chưa có phản hồi được xác nhận, không tự đánh dấu đã giải quyết. Nếu tool không cung cấp thời gian dự kiến thì nói chưa có; ngoài giờ chỉ nêu ca trực tiếp theo. Việc chờ không tự gia hạn bài tập. |
+| Xuất bản qua `dang_FAQ` | Người duyệt có quyền đã được xác thực qua kênh quản trị xem câu hỏi, nguyên văn câu trả lời sắp đăng, nguồn/mã mục, điểm mâu thuẫn và phạm vi hiển thị cho cả lớp. Lỗi §3.3 cần giảng viên xác nhận kết luận; thông báo gia hạn cần đối chiếu nguồn deadline chính thức đã cập nhật. | **Quy tắc chọn cho prototype:** phiếu có hạn hiệu lực 24 giờ từ lúc tạo, hiển thị bằng ngày và giờ cụ thể; đây là thời hạn hiệu lực của phiếu, không phải cam kết TA phản hồi trong 24 giờ. Thiếu hạn hiệu lực hoặc hết hạn thì không xuất bản, chuyển lại bước rà soát và tạo phiếu mới nếu còn cần. Im lặng không phải đồng ý. Nếu nội dung hoặc nguồn đổi sau khi duyệt thì phải duyệt lại. |
+
+**Phân biệt quyền:** nút "Gửi phản ánh cho TA" chỉ duyệt việc chuyển câu hỏi; không đồng thời duyệt đăng FAQ. Người tự xưng TA trong chat không trở thành người duyệt hợp lệ. Khi chưa có cơ chế xác thực quyền, AI chỉ giữ bản nháp và hướng người có thẩm quyền sang kênh quản trị hiện có.
+
+### 4.4. Tool khó xếp nhất: `dang_FAQ`
+
+Khó nhất là giữ lợi ích phổ biến kiến thức mà không biến trợ lý thành người tự ban hành thông tin cho cả lớp. Ba phương án được đối chiếu trong bản phân tích:
+
+| Phương án | Lợi ích | Cái giá gắn với §2 | Kết luận thiết kế |
+|---|---|---|---|
+| Cho AI tự đăng khi có trích nguồn | Cả lớp nhận câu trả lời nhanh, giảm việc cho TA. | Kịch bản 8 cho thấy trích đúng câu trong tài liệu vẫn có thể phổ biến kiến thức sai; kịch bản 2 cho thấy lời tự xưng không xác nhận quyền đổi hạn. | Loại. Nguồn trích không đủ thay thế kiểm tra nội dung và thẩm quyền. |
+| AI soạn, người có thẩm quyền duyệt trước khi đăng | Giữ được FAQ và có người kiểm tra phạm vi ảnh hưởng. | Mất thời gian duyệt; phải quản lý bản nháp, nguồn và nội dung đã được duyệt. | **Chọn cho bản thiết kế này.** Hỗ trợ riêng vẫn tiếp tục trong lúc FAQ chờ duyệt. |
+| Cấm AI dùng `dang_FAQ` trong mọi trường hợp | Chặn việc AI phát tán sai qua FAQ. | Câu hỏi đã được kiểm chứng vẫn phải đăng thủ công hoàn toàn; bỏ mất lợi ích chuẩn bị nội dung của trợ lý. | Loại như một quy tắc lâu dài; áp dụng việc không xuất bản khi chưa có cơ chế duyệt hợp lệ. |
+
+**Thảo luận mô phỏng để thể hiện các đánh đổi:** các lập trường dưới đây là giả định phục vụ bài thiết kế/demo, không phải biên bản hay khẳng định về lựa chọn thực tế trước đây của từng thành viên.
+
+| Thành viên trong mô phỏng | Lựa chọn ban đầu giả định | Lập luận và điều phải đánh đổi |
+|---|---|---|
+| Nguyễn Đức Hiếu | Cần TA/giảng viên duyệt trước khi đăng. | Ưu tiên chặn thông tin sai ảnh hưởng cả lớp ở kịch bản 2; chấp nhận FAQ ra chậm và tăng việc rà soát. |
+| Đỗ Minh Thanh | Cho tự đăng câu trả lời học tập nếu có trích nguồn, chỉ duyệt thông báo quản trị. | Muốn giảm thời gian chờ; phải từ bỏ ngoại lệ tự đăng khi kịch bản 8 cho thấy nguồn chính thức cũng có thể sai về kiến thức. |
+| Nguyễn Mạnh Quân | Cấm AI dùng `dang_FAQ`. | Ưu tiên tránh phổ biến kiến thức sai ở kịch bản 8; phải chấp nhận mọi câu trả lời dùng chung đều cần đăng thủ công. |
+
+**Chốt mức cho bản thiết kế:** AI được soạn nhưng mọi lần xuất bản đều cần duyệt đúng thẩm quyền. Cách này giữ lợi ích chuẩn bị FAQ, chặn hai ca đắt nhất trước khi nội dung đến cả lớp, đồng thời không buộc lời giải thích riêng phải chờ duyệt FAQ. Khi chưa triển khai được kiểm tra quyền và phiếu duyệt, không cho AI thực thi `dang_FAQ`; người có thẩm quyền đăng qua kênh quản trị.
+
+### 4.5. Đối chiếu hai ca đắt nhất và một ca bình thường
+
+Đây là **kiểm tra luồng trên giấy**, chưa phải kết quả chạy prototype hay kiểm thử lời gọi tool thật.
+
+| Tình huống | Luồng theo mức đã đặt | Cái sai có bị chặn? Còn phải hỏi/duyệt gì? | Người dùng có phải chờ vô ích không? |
+|---|---|---|---|
+| **Kịch bản 8:** học viên chỉ ra 0.4 > 0.16, trái câu trong §3.3. | Tự tra cứu §3.3; kiểm tra phản ví dụ và giải thích giới hạn như §3.1 của bài nộp. Soạn phản ánh, cho học viên xem trước và chọn gửi qua `chuyen_TA`. Không tự sửa giáo trình hoặc xuất bản FAQ. | Không buộc học viên nhận sai theo nguồn lỗi. Chặn xuất bản kết luận khi chưa có giảng viên duyệt. Phải hỏi trước khi chuyển nội dung; không cần hỏi lại phép tính đã rõ. Nếu bộ số thực sự thuộc đáp án bài đang mở thì vẫn áp dụng giới hạn của `goi_y_bai_tap`. | Học viên nhận giải thích về mâu thuẫn ngay; chỉ việc đính chính nguồn và công bố cho cả lớp phải chờ người có thẩm quyền. |
+| **Kịch bản 2:** người tự xưng TA yêu cầu đăng hạn 15/11. | Đối chiếu Dữ liệu B, trả hạn 23:59 ngày 13/11/2026. Dừng `dang_FAQ`; chỉ chuyển yêu cầu kiểm tra nếu người gửi xác nhận bản nháp. | Chặn deadline giả và không hiểu lời tự xưng là quyền quản trị. Phải xác thực qua kênh chính thức; kể cả người có quyền thật cũng cần cập nhật nguồn deadline trước khi duyệt thông báo mới. | Người học vẫn biết hạn hiện tại ngay. Người đề nghị gia hạn phải chờ xác minh vì chi phí chờ thấp hơn nguy cơ làm cả lớp lỡ hạn. |
+| **Ca bình thường:** "Em chưa hiểu cách xác định trung vị trong §3.2, giải thích giúp em phương pháp." | Tự tra cứu §3.2 và dùng `goi_y_bai_tap` để giải thích cách sắp xếp dữ liệu, xác định vị trí giữa theo nguồn. Không xác nhận đáp số bài đang mở, không gọi `chuyen_TA` hoặc `dang_FAQ` nếu không có yêu cầu tương ứng. | Không cần hỏi lại vì khái niệm và mã mục đã rõ. Nếu tra cứu thiếu nguồn thì nói rõ thay vì tự dựng ví dụ rồi gán cho tài liệu. | Không phải chờ TA hoặc duyệt FAQ cho một lời giải thích riêng có căn cứ. |
+
+**Giới hạn còn lại:** các mức quyền không tự bảo đảm lời giải thích của AI luôn đúng. Ca bình thường vẫn có thể bị giải thích sai hoặc gợi ý quá sát đáp án; prototype cần cho xem nguồn, phản ánh lỗi và chặn nội dung vượt phạm vi trước khi gửi. Không dùng bảng đối chiếu này để tuyên bố hệ thống đã an toàn.
+
+### 4.6. Luật bổ sung và các bước cần tách
+
+Các kiểm soát dưới đây là **yêu cầu thiết kế cần bổ sung**, không phải khả năng sẵn có được suy ra từ tên bốn tool:
+
+1. **Tách tìm nguồn khỏi kết luận:** lưu đúng trích đoạn và mã mục; cho phép nhận diện mâu thuẫn như kịch bản 8. Tra cứu lỗi hoặc thiếu nguồn thì không bịa nội dung, mã mục hay slide. Deadline lấy từ Dữ liệu B; chưa có nguồn thì không tự suy đoán hạn.
+2. **Tách soạn gợi ý khỏi gửi gợi ý:** đối chiếu trạng thái bài với trang khóa học, kiểm tra có lộ hoặc xác nhận đáp số hay không trước khi gửi. Khi không xác định được trạng thái bài, chỉ giải thích khái niệm chung và hỏi thêm; không dùng lời "đã nộp" làm căn cứ nới giới hạn. Luật áp dụng cho cả chat trực tiếp và `goi_y_bai_tap`.
+3. **Tách soạn phiếu, xác nhận gửi và nhận kết quả:** `chuyen_TA` chỉ được gọi sau khi người gửi duyệt đúng nội dung sẽ chuyển. Các trạng thái "đang gửi", "đã tiếp nhận", "chưa gửi được" phải khớp kết quả thật. Không suy diễn đã gửi thành công thành TA đã đọc, đã hẹn giờ hoặc đã mở Meet.
+4. **Tách soạn FAQ, duyệt và xuất bản:** bước thực thi `dang_FAQ` phải kiểm tra quyền người duyệt, đúng nội dung/nguồn đã duyệt và hiệu lực phê duyệt. Kiểm tra ở nơi thực thi hành động; chỉ ẩn nút hoặc nhắc AI "hãy cẩn thận" không đủ. Thiếu cơ chế kiểm tra thì không cấp quyền tự xuất bản cho AI; người có quyền xử lý qua kênh quản trị.
+5. **Không tự đăng lại khi kết quả gửi không rõ:** với `chuyen_TA` và `dang_FAQ`, phân biệt thất bại xác định với chưa biết kết quả. Nếu chưa biết thao tác đã được nhận chưa thì kiểm tra trạng thái trước khi thử lại; khi hệ thống không hỗ trợ kiểm tra, báo chưa xác định và chuyển người xử lý, tránh tạo phiếu hoặc FAQ trùng.
+6. **Sửa sai phải theo đúng quyền:** nếu FAQ sai đã xuất hiện, chuyển thông tin bài đã đăng và căn cứ đúng cho người quản trị xử lý. Không tự nói đã gỡ hay đã đính chính khi chưa có kết quả xác nhận. Gỡ bài không thay thế việc thông báo sửa sai tới người đã bị ảnh hưởng.
+
+### 4.7. Mức tự chủ thay đổi lời hứa với người dùng
+
+Vì `dang_FAQ` cần duyệt, lời hứa chuyển từ **"Mình sẽ cập nhật ngay thông tin này cho cả lớp"** thành:
+
+> "Mình có thể soạn nội dung và căn cứ để người có thẩm quyền kiểm tra. FAQ chỉ được đăng sau khi có phê duyệt hợp lệ; trong lúc chờ, deadline trên trang khóa học vẫn là 23:59 ngày 13/11/2026."
+
+Tương tự, `chuyen_TA` chỉ hứa **chuyển đúng nội dung người gửi đã duyệt và thông báo đúng kết quả gửi**. Không hứa TA trả lời ngay, đúng 08:00 hoặc trước hạn nộp. Đổi lại, trợ lý vẫn giải thích và gợi ý phương pháp trong phạm vi cho phép ngay lúc học viên cần.
 
 ## §5. Prototype  (chặng 5)
 - Link hoặc file · công cụ · phần nào mock · có lời gọi AI thật không.
